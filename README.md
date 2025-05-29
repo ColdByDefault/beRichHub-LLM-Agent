@@ -1,6 +1,6 @@
 # beRichHub A RAG Chatbot
 
-This project details how to build and deploy a **Retrieval Augmented Generation (RAG)** chatbot trained on your data. The specific example built in this tutorial focuses on creating a chatbot that can answer questions about any data using up-to-date information.
+This project is a Open-Sourcce **Retrieval Augmented Generation (RAG)** chatbot trained on data => part of [beRichHb](https://www.coldbydefault.com/berichHub).
 
 The chatbot utilizes a RAG approach to provide current and accurate answers, bypassing the knowledge cutoff date of the Large Language Model (LLM) by incorporating external data.
 
