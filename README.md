@@ -32,6 +32,7 @@ The chatbot utilizes a RAG approach to provide current and accurate answers, byp
 
 * **Node.js:** Latest stable version.
 * **Ollama Setup:** Install and configure ollama engine or remote endpoint.
+* **Astra:** Configure AstraDb remote endpoint.
 * **.env Configuration:** See below for required variables.
 
 ## Setup and Installation
