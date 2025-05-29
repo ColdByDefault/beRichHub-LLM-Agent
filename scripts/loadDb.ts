@@ -45,7 +45,7 @@ const splitter = new RecursiveCharacterTextSplitter({
 async function getAllChunks(urls: string[]) {
   let all: string[] = [];
   for (const url of urls) {
-    console.log("⏳ Scraping", url);
+    console.log("Scraping", url);
     const loader = new PuppeteerWebBaseLoader(url, {
       launchOptions: { headless: "new" },
       gotoOptions: { waitUntil: "domcontentloaded" },
