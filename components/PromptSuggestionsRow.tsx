@@ -10,11 +10,11 @@ const PromptSuggestionsRow = ({ onPromptClick}) => {
     "How do I get started with beRichHub?",
   ];
   return (
-    <div>
-      {suggestions.map((suggestion, index) => <PromptSuggestionBtn 
-      key={`suggestion-${index}`} 
-      text={suggestion}
-      onClick={() => onPromptClick(suggestion)}/>)}
+    <div className="flex flex-wrap gap-2 justify-start">
+        {suggestions.map((suggestion, index) => <PromptSuggestionBtn 
+        key={`suggestion-${index}`} 
+        text={suggestion}
+        onClick={() => onPromptClick(suggestion)}/>)}
     </div>
   )
 }
