@@ -38,7 +38,7 @@ The chatbot utilizes a RAG approach to provide current and accurate answers, byp
 **The default settings are**:
 ```bash
   model: ollama gemma3
-  embadding: nordic-
+  embadding: nomic-embed-text
   DB: Astra 2.0.1
   versions:
     langchain: 0.1.36
