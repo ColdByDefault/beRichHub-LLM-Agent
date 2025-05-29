@@ -39,12 +39,11 @@ The chatbot utilizes a RAG approach to provide current and accurate answers, byp
 ```bash
   model: ollama gemma3
   embadding: nordic-
-  DB: Astra
+  DB: Astra 2.0.1
   versions:
-    langchain:
-    poetrypy:
-    puppeteer:
-    next.js: 15.2 (or any >14)
+    langchain: 0.1.36
+    puppeteer: 19.11.1
+    next.js: 15.3 (or any >14)
     react & reactDOM: 19 (or any >18)
     tailwind: v4 via postCSS (any < 4 => needs config & init)
 ```
