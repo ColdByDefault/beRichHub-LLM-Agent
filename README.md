@@ -4,6 +4,9 @@ This project is a Open-Sourcce **Retrieval Augmented Generation (RAG)** chatbot 
 
 The chatbot utilizes a RAG approach to provide current and accurate answers, bypassing the knowledge cutoff date of the Large Language Model (LLM) by incorporating external data.
 
+[![wakatime](https://wakatime.com/badge/user/c4621892-41e0-4c29-a8bc-05597d124f63/project/c8cb1243-05eb-4b92-a4df-acc99ebf081d.svg)](https://wakatime.com/badge/user/c4621892-41e0-4c29-a8bc-05597d124f63/project/c8cb1243-05eb-4b92-a4df-acc99ebf081d)
+[![wakatime](https://wakatime.com/badge/user/c4621892-41e0-4c29-a8bc-05597d124f63/project/8e45c061-5a4a-4dff-a150-bde63a57252c.svg)](https://wakatime.com/badge/user/c4621892-41e0-4c29-a8bc-05597d124f63/project/8e45c061-5a4a-4dff-a150-bde63a57252c)
+
 ## Features
 
 * **RAG Implementation:** Augments an LLM's output by providing extra context from external data alongside user input.
@@ -38,10 +41,17 @@ The chatbot utilizes a RAG approach to provide current and accurate answers, byp
 ## Setup and Installation
 **The default settings are**:
 ```bash
-  model: ollama gemma3
+  model: ollama deepseek-r1:7b-qwen-distill-q4_K_M 
+            * DeepSeek-R1-Distill-Qwen-7B-Q4_K_M is a 7 billion-parameter distilled reasoning model
+              quantized to 4 bits (Q4_K_M).
+            * The 4-bit quantization reduces the on-disk size to approximately 4.68 GB.
+            * RAM: >= 8GB
+              VRAM: >= 8GB
+              Storage: ~5 GB plus ~2 GB overhead for Ollama and cache
+              CUDA Toolkit >=11.x for faster inference
   embadding: nomic-embed-text
   DB: Astra 2.0.1
-  versions:
+  Dep/Devdep-versions:
     langchain: 0.1.36
     puppeteer: 19.11.1
     next.js: 15.3 (or any >14)
