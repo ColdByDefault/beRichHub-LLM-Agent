@@ -20,14 +20,14 @@ if (
   process.exit(1);
 }
 
-// 1) Build Astra client exactly as in your loadDb.ts
-const client = new DataAPIClient({});  
+// Build Astra client
+const client = new DataAPIClient({});
 const db = client.db(ASTRA_DB_API_ENDPOINT, {
   token: ASTRA_DB_APPLICATION_TOKEN,
   keyspace: ASTRA_DB_NAMESPACE,
 });
 
-// 2) Helper to call your local Ollama embed endpoint
+// Helper to get embeddings
 async function embedText(text: string): Promise<number[]> {
   const res = await fetch(`${OLLAMA_API_URL}/api/embeddings`, {
     method: "POST",
@@ -50,50 +50,40 @@ export async function POST(req: Request) {
     const { messages } = await req.json();
     const latestMessage = messages[messages.length - 1]?.content || "";
 
-    // 3) Get the embedding from Ollama
+    // 1) Get embedding and query Astra for context
     const vector = await embedText(latestMessage);
-
-    // 4) Query Astra DB nearest-neighbor by that vector
     const coll: Collection = await db.collection(ASTRA_DB_COLLECTION);
-    const cursor = coll.find(null, {
-      sort: { $vector: vector },
-      limit: 10,
-    });
-    const docs = await cursor.toArray();
+    const docs = await coll
+      .find(null, { sort: { $vector: vector }, limit: 10 })
+      .toArray();
     const snippets = docs.map((d) => d.content || d.text || "");
-    const docContext = JSON.stringify(snippets);
+    const context = JSON.stringify(snippets);
 
-    // 5) Build a “system” message with context
+    // 2) Build system + user history into a prompt
     const systemMsg = {
       role: "system",
       content: `
 You are a helpful assistant. Use the following context to answer the user's question.
-If the context doesn't include the information, answer from your own knowledge (no citations).
+If the context doesn't include the information, answer from your own knowledge (no citations) and mention it.
 
 -------------  
 START CONTEXT  
-${docContext}  
+${context}  
 END CONTEXT  
 -------------  
 QUESTION: ${latestMessage}
       `.trim(),
     };
+    const prompt =
+      [systemMsg, ...messages]
+        .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
+        .join("\n") + "\nASSISTANT:";
 
-    // 6) Flatten history into one prompt string
-    const history = [systemMsg, ...messages];
-    const prompt = history
-      .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
-      .join("\n") + "\nASSISTANT:";
-
-    // 7) Call Ollama generate with streaming
+    // 3) Stream generation from Ollama
     const genRes = await fetch(`${OLLAMA_API_URL}/api/generate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "deepseek-r1:7b-qwen-distill-q4_K_M",
-        prompt,
-        stream: true,
-      }),
+      body: JSON.stringify({ model: "deepseek-r1:7b-qwen-distill-q4_K_M", prompt, stream: true }),
     });
     if (!genRes.ok || !genRes.body) {
       const errText = await genRes.text();
@@ -101,12 +91,48 @@ QUESTION: ${latestMessage}
       return new Response("Internal Server Error", { status: 500 });
     }
 
-    // 8) Pipe the Ollama stream back as SSE
-    return new Response(genRes.body, {
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+    const uuid = crypto.randomUUID();
+
+    const sseStream = new ReadableStream({
+      async start(controller) {
+        const reader = genRes.body.getReader();
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          const text = decoder.decode(value).trim();
+          
+          let responseChunk = "";
+          try {
+            // parse Ollama JSON chunk and extract only the `response` field
+            const parsed = JSON.parse(text);
+            responseChunk = parsed.response ?? "";
+          } catch {
+            // if it's not valid JSON, skip it
+            continue;
+          }
+
+          controller.enqueue(
+            encoder.encode(
+              `data: ${JSON.stringify({
+                id: uuid,
+                role: "assistant",
+                content: responseChunk,
+              })}\n\n`
+            )
+          );
+        }
+        controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
+        controller.close();
+      },
+    });
+
+    return new Response(sseStream, {
       headers: {
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache",
-        "Connection": "keep-alive",
+        Connection: "keep-alive",
       },
     });
   } catch (err) {
