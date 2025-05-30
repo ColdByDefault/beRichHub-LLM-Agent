@@ -41,10 +41,17 @@ The chatbot utilizes a RAG approach to provide current and accurate answers, byp
 ## Setup and Installation
 **The default settings are**:
 ```bash
-  model: ollama gemma3
+  model: ollama deepseek-r1:7b-qwen-distill-q4_K_M 
+            * DeepSeek-R1-Distill-Qwen-7B-Q4_K_M is a 7 billion-parameter distilled reasoning model
+              quantized to 4 bits (Q4_K_M).
+            * The 4-bit quantization reduces the on-disk size to approximately 4.68 GB.
+            * RAM: >= 8GB
+              VRAM: >= 8GB
+              Storage: ~5 GB plus ~2 GB overhead for Ollama and cache
+              CUDA Toolkit >=11.x for faster inference
   embadding: nomic-embed-text
   DB: Astra 2.0.1
-  versions:
+  Dep/Devdep-versions:
     langchain: 0.1.36
     puppeteer: 19.11.1
     next.js: 15.3 (or any >14)
