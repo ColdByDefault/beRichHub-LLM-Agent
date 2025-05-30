@@ -27,7 +27,7 @@ if (
   process.exit(1);
 }
 
-const urls = ["https://en.wikipedia.org/wiki/Node.js"]; 
+const urls = ["https://www.gfn.de"]; 
 
 // 1. Build the Astra DB client
 const client = new DataAPIClient({});
