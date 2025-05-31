@@ -1,3 +1,4 @@
+// Chat.tsx
 "use client";
 
 import React, { useState, FormEvent } from "react";
@@ -18,7 +19,7 @@ export default function Chat() {
     e.preventDefault();
     if (!input.trim()) return;
 
-    // add user message
+    // 1) Add the user’s message immediately
     const userMsg: Message = {
       id: crypto.randomUUID(),
       role: "user",
@@ -28,14 +29,14 @@ export default function Chat() {
     setInput("");
     setDisabled(true);
 
-    // assistant placeholder
+    // 2) Insert an “empty‐content” assistant placeholder (shows the skeleton)
     const assistantId = crypto.randomUUID();
     setMessages((prev) => [
       ...prev,
-      { id: assistantId, role: "assistant", content: "Loading..." },
+      { id: assistantId, role: "assistant", content: "" }, // ← content="" triggers skeleton
     ]);
 
-    // SSE call
+    // 3) Start the SSE/stream to /api/chat
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -68,7 +69,7 @@ export default function Chat() {
 
         try {
           const { content } = JSON.parse(payload);
-          // strip <think>...</think>
+          // Strip out any <think>…</think> spans
           let clean = "";
           let idx = 0;
           while (idx < content.length) {
@@ -86,6 +87,7 @@ export default function Chat() {
           }
 
           if (clean) {
+            // 4) As soon as we get real tokens (clean), overwrite the assistant’s "" with real text
             setMessages((prev) =>
               prev.map((m) =>
                 m.id === assistantId
@@ -108,9 +110,13 @@ export default function Chat() {
   };
 
   return (
-    <main>
-      <MessageList messages={messages} />
+    <section className="flex flex-col justify-between h-full p-4">
+      {/* Scrollable message area */}
+      <div className="flex-1 overflow-y-auto">
+        <MessageList messages={messages} />
+      </div>
 
+      {/* Input form “pinned” to bottom */}
       <footer className="w-full max-w-2xl mx-auto">
         <form onSubmit={onSubmit} className="flex gap-4 items-start">
           <Textarea
@@ -125,6 +131,6 @@ export default function Chat() {
           </Button>
         </form>
       </footer>
-    </main>
+    </section>
   );
 }
