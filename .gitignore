@@ -79,3 +79,11 @@ docker/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+./generated/prisma
+/generated/prisma
+/prisma/dev.db
+./prisma/dev.db
+/prisma/*.db
+./prisma/*.db
+
