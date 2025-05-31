@@ -111,6 +111,27 @@ The project includes a script (`scripts/loadDb.ts`) to scrape and ingest data.
    * Generate embeddings using the configured ollama model.
    * Insert text chunks and embeddings into the vector store.
 
+   **For PostgreSQL**
+   
+   ```bash
+   npx prisma init
+   ```
+   - This creates a new prisma/ directory
+
+   **then**
+
+   ```bash
+   npx prisma migrate dev --name init_chunks_table
+   ```
+   - This generates a migration file (under prisma/migrations/…) which creates a Chunk table with these columns.
+
+   **lastly**
+
+   ```bash
+   npm run seed-postgres
+   ```
+
+
 ## Running the Application
 
 ```bash
