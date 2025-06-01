@@ -26,8 +26,8 @@ if (
   );
   process.exit(1);
 }
-
-const urls = ["https://www.gfn.de"]; 
+// add your URLs here
+const urls = [""]; 
 
 // 1. Build the Astra DB client
 const client = new DataAPIClient({});

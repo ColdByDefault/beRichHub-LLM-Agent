@@ -155,7 +155,8 @@ export async function POST(req: Request) {
       role: "system",
       content: `
 You are a helpful assistant. Use the following context to answer the user's question.
-If the context doesn't include the information, answer from your own knowledge (no citations) and mention it.
+If the context doesn't include the information, if the Answer isn't in the CONTEXT; say:
+"I know what the answer is, however, it was provided in the context  .
 
 -------------
 START CONTEXT  
