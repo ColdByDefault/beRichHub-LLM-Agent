@@ -1,17 +1,17 @@
 // prisma/schema.prisma
-
+ 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
+ 
 generator client {
   provider = "prisma-client-js"
 }
-
-/// 
-/// Model to store each “chunk” of scraped text plus its embedding vector. 
-/// We store the embedding as a plain Float[] (PostgreSQL `float8[]`) for now. 
+ 
+///
+/// Model to store each “chunk” of scraped text plus its embedding vector.
+/// We store the embedding as a plain Float[] (PostgreSQL `float8[]`) for now.
 /// (Later, you could replace this with pgvector or another extension if you want k-NN search in Postgres.)
 ///
 model Chunk {
@@ -20,3 +20,4 @@ model Chunk {
   embedding Float[]  // Prisma will translate this to a PostgreSQL `float8[]` column.
   createdAt DateTime @default(now())
 }
+ 
